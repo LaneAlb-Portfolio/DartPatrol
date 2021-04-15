@@ -7,8 +7,6 @@ class Dartboard extends Phaser.GameObjects.Sprite {
     }
 
     update(){
-        // spin dartboard image since its circular
-        this.rotation += 0.01;
         // move spaceship left
         this.x -= this.moveSpeed;
         // movement wrap
@@ -21,6 +19,8 @@ class Dartboard extends Phaser.GameObjects.Sprite {
         this.x = game.config.width;
         // this.y randomize
         //this.y = Phaser.Math.Between();
+        // bottom of play area: game.config.height - borderUISize - borderPad;
+        // top: borderUISize * 3 + borderPad
     }
 
 }
