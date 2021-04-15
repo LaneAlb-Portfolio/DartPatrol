@@ -6,7 +6,7 @@ class Play extends Phaser.Scene{
     preload(){
         // load tile sprites
         this.load.image('rocket', './assets/rocket.png');
-        this.load.image('spaceship', './assets/spaceship.png');
+        this.load.image('dartboard', './assets/dartboard.png');
         this.load.image('starfield', './assets/starfield.png');
         this.load.spritesheet('explosion', './assets/explosion.png', {
             frameWidth: 64,
@@ -39,12 +39,12 @@ class Play extends Phaser.Scene{
         this.p1Rocket = new Rocket(this, game.config.width / 2, game.config.height - borderUISize - borderPad, 
         'rocket', 0).setOrigin(0.5,0);
 
-        // Spaceships
-        this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship', 0,30)
+        // dartboards
+        this.ship01 = new Dartboard(this, game.config.width + borderUISize*6, borderUISize*4, 'dartboard', 0,30)
         .setOrigin(0,0);
-        this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPad*2, 
-        'spaceship', 0,20).setOrigin(0,0);
-        this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderUISize*4, 'spaceship', 0,10)
+        this.ship02 = new Dartboard(this, game.config.width + borderUISize*3, borderUISize*5 + borderPad*2, 
+        'dartboard', 0,20).setOrigin(0,0);
+        this.ship03 = new Dartboard(this, game.config.width, borderUISize*6 + borderUISize*4, 'dartboard', 0,10)
         .setOrigin(0,0);
 
         // define keys
