@@ -56,7 +56,7 @@ class Menu extends Phaser.Scene{
           // Expert mode
           game.settings = {
             dartboardSpeed: 3,
-            gameTimer: 45000,
+            gameTimer: 25000,
             textPointX: game.config.width - borderUISize+16 - (borderUISize + borderPad)*6,
           }
           this.sound.play('sfx_select');

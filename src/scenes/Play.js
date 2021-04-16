@@ -101,7 +101,8 @@ class Play extends Phaser.Scene{
         this.scoreLeft = this.add.text(game.settings.textPointX, (borderUISize + borderPad)*2, this.p1Score, scoreConfig);
         scoreConfig.fontSize = '64px';
         scoreConfig.color = '#000000';
-        this.playClock = this.add.text(game.config.width/2 - (borderPad + borderUISize), game.config.height - (borderUISize + borderPad)*2, Phaser.Math.FloorTo(game.settings.gameTimer / 1000, 0), scoreConfig);
+        this.playClock = this.add.text(game.config.width/2 - (borderPad + borderUISize), game.config.height - (borderUISize + borderPad)*2, 
+            Phaser.Math.FloorTo(game.settings.gameTimer/1000), scoreConfig);
         this.playClock.alpha = 0.7;
         // GAME OVER flag
         this.gameOver = false;
@@ -116,9 +117,12 @@ class Play extends Phaser.Scene{
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← to Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
+        // get total play time from settings
+        this.playTime = game.settings.gameTimer / 1000;
     }
 
     update(){
+        //console.log(this.clock.getProgress() * 100);
         // check key input for restart / menu
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
             this.scene.restart();
@@ -133,7 +137,7 @@ class Play extends Phaser.Scene{
 
         if(!this.gameOver){
             // update timer
-            this.playClock.text = Phaser.Math.FloorTo(game.settings.gameTimer / 1000, 0);
+            this.playClock.text = Phaser.Math.FloorTo(this.playTime - (game.settings.gameTimer * this.clock.getProgress())/1000);
             // update dart
             this.p1Dart.update();
             this.dartRattle(this.p1Dart);
