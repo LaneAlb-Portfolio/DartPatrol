@@ -5,8 +5,8 @@ class Play extends Phaser.Scene{
 
     preload(){
         // load tile sprites
-        this.load.spritesheet('rocket', './assets/dart.png', {
-            frameWidth: 10,
+        this.load.spritesheet('dart', './assets/dart.png', {
+            frameWidth: 8,
             frameHeight: 30,
             startFrame: 0,
             endFrame: 1
@@ -28,22 +28,20 @@ class Play extends Phaser.Scene{
         .setOrigin(0,0); 
 
         // UI and Borders
-        this.add.rectangle(0, borderUISize + borderPad, game.config.width, borderUISize *2, 0x00FF00) // ( X, Y, Width, Height, Color )
+        // Brown #7a4905 Border
+        this.add.rectangle(0,0, game.config.width, borderUISize, 0x7a4905)
         .setOrigin(0,0);
-        // White Border
-        this.add.rectangle(0,0, game.config.width, borderUISize, 0xFFFFFF)
+        this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0x7a4905)
         .setOrigin(0,0);
-        this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0xFFFFFF)
+        this.add.rectangle(0, 0, borderUISize, game.config.height, 0x7a4905)
         .setOrigin(0,0);
-        this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF)
-        .setOrigin(0,0);
-        this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFff)
+        this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0x7a4905)
         .setOrigin(0,0);
 
         
         // Dart (Player 1)
-        this.p1Rocket = new Rocket(this, game.config.width / 2, game.config.height - borderUISize - borderPad, 
-        'rocket', 0).setOrigin(0.5,0);
+        this.p1Dart = new Dart(this, game.config.width / 2, game.config.height - borderUISize - borderPad, 
+        'dart', 0).setOrigin(0.5,0);
 
         // darts
         this.ship01 = new Dartboard(this, game.config.width + borderUISize*6, borderUISize*4, 'dartboard', 0,30)
@@ -75,7 +73,7 @@ class Play extends Phaser.Scene{
         });
         const configPlayer = ({
             key: 'rattle', 
-            frames: this.anims.generateFrameNumbers('rocket', {
+            frames: this.anims.generateFrameNumbers('dart', {
                 start: 0,
                 end: 1,
             }),
@@ -89,25 +87,31 @@ class Play extends Phaser.Scene{
 
         // display Score
         let scoreConfig = {
-            fontFamily: 'Courier',
-            fontSize: '28px',
-            backgroundColor: '#F3B141',
-            color: '#843605',
-            align: 'right',
+            fontFamily: 'Arimo',
+            fontSize: '24px',
+            //backgroundColor: '#F3B141',
+            color: '#FFFFFF',
+            align: 'center',
             padding: {
                 top: 5,
                 bottom: 5,
             },
             fixedWidth: 100
         }
-        this.scoreLeft = this.add.text(borderUISize + borderPad, borderUISize + borderPad*2, this.p1Score, scoreConfig);
-
+        this.scoreLeft = this.add.text(game.settings.textPointX, (borderUISize + borderPad)*2, this.p1Score, scoreConfig);
+        scoreConfig.fontSize = '64px';
+        scoreConfig.color = '#000000';
+        this.playClock = this.add.text(game.config.width/2 - (borderPad + borderUISize), game.config.height - (borderUISize + borderPad)*2, Phaser.Math.FloorTo(game.settings.gameTimer / 1000, 0), scoreConfig);
+        this.playClock.alpha = 0.7;
         // GAME OVER flag
         this.gameOver = false;
 
         // 60-second play clock
         scoreConfig.fixedWidth = 0;
         this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
+            scoreConfig.backgroundColor = 'rgba(0,0,0, 0.4)';
+            scoreConfig.color = '#FFFFFF';
+            scoreConfig.fontSize = '32px';
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← to Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
@@ -128,9 +132,11 @@ class Play extends Phaser.Scene{
         //this.lobbybck.tilePositionX -= starSpeed;
 
         if(!this.gameOver){
-            // update Rocket
-            this.p1Rocket.update();
-            this.dartRattle(this.p1Rocket);
+            // update timer
+            this.playClock.text = Phaser.Math.FloorTo(game.settings.gameTimer / 1000, 0);
+            // update dart
+            this.p1Dart.update();
+            this.dartRattle(this.p1Dart);
             // update ships
             this.ship01.update();
             this.ship02.update();
@@ -139,34 +145,34 @@ class Play extends Phaser.Scene{
         }
 
         // check collisions
-        if(this.checkCollision(this.p1Rocket, this.ship03)){
+        if(this.checkCollision(this.p1Dart, this.ship03)){
             // explosion
-            this.p1Rocket.reset();
+            this.p1Dart.reset();
             this.shipExplode(this.ship03);
         }
-        if(this.checkCollision(this.p1Rocket, this.ship02)){
+        if(this.checkCollision(this.p1Dart, this.ship02)){
             // explosion
-            this.p1Rocket.reset();
+            this.p1Dart.reset();
             this.shipExplode(this.ship02);
         }
-        if(this.checkCollision(this.p1Rocket, this.ship01)){
+        if(this.checkCollision(this.p1Dart, this.ship01)){
             // explosion
-            this.p1Rocket.reset();
+            this.p1Dart.reset();
             this.shipExplode(this.ship01);
         }
-        if(this.checkCollision(this.p1Rocket, this.silo)){
+        if(this.checkCollision(this.p1Dart, this.silo)){
             // explosion
-            this.p1Rocket.reset();
+            this.p1Dart.reset();
             this.shipExplode(this.silo);
         }
     }
 
-    checkCollision(rocket, ship){
+    checkCollision(dart, ship){
         // simple checking
-        if (rocket.x < ship.x + ship.width &&
-            rocket.x + rocket.width > ship.x &&
-            rocket.y < ship.y + ship.height &&
-            rocket.height + rocket.y > ship.y) {
+        if (dart.x < ship.x + ship.width &&
+            dart.x + dart.width > ship.x &&
+            dart.y < ship.y + ship.height &&
+            dart.height + dart.y > ship.y) {
                 return true;
         } else {
             return false;

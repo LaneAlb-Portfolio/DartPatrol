@@ -9,6 +9,7 @@ class Dartboard extends Phaser.GameObjects.Sprite {
     update(){
         // move spaceship left
         this.x -= this.moveSpeed;
+        //this.angle += 0.1;
         // movement wrap
         if(this.x <= 0 - this.width){
             this.reset();

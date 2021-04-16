@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocket Patrol</title>
+    <title>Dart Lobby</title>
     <script src="./lib/phaser.js"></script>
-    <script src="./src/prefabs/Rocket.js"></script>
+    <script src="./src/prefabs/Dart.js"></script>
     <script src="./src/prefabs/Dartboard.js"></script>
     <script src="./src/scenes/Menu.js"></script>
     <script src="./src/scenes/Play.js"></script>
@@ -15,7 +15,14 @@
         body {
             background-color: #ff8c00;
         }
+        @font-face {
+            font-family: Arimo;
+            src: url(./assets/Arimo.ttf);
+            font-weight: 400;
+            font-weight: normal;
+        }
     </style>
+    <div style="font-family:Arimo; position:absolute; left:-1000px; visibility:hidden;">.</div>
 </head>
 <body>
 </body>
