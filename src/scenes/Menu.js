@@ -47,7 +47,8 @@ class Menu extends Phaser.Scene{
           game.settings = {
             dartboardSpeed: 2,
             gameTimer: 60000,
-            textPointX: (borderUISize + borderPad)*4 + 6,    
+            textPointX: (borderUISize + borderPad)*4 + 6,
+            diff: 1,
           }
           this.sound.play('sfx_select');
           this.scene.start("playScene");    
@@ -58,6 +59,7 @@ class Menu extends Phaser.Scene{
             dartboardSpeed: 3,
             gameTimer: 25000,
             textPointX: game.config.width - borderUISize+16 - (borderUISize + borderPad)*6,
+            diff: 2,
           }
           this.sound.play('sfx_select');
           this.scene.start("playScene");    
