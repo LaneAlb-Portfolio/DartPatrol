@@ -28,13 +28,13 @@ class Dart extends Phaser.GameObjects.Sprite {
             this.sfxRocket.play();
         }
         // projectile movement
-        if(this.isFiring && this.y >= borderUISize * 3 + borderPad){
+        if(this.isFiring && this.y >= borderPad + this.height){
             this.y -= this.moveSpeed;
             this.x += (this.rotation * this.moveSpeed);
             // put shake here
         }
         // reset if projectile miss
-        if(this.y <= borderUISize * 3 + borderPad){
+        if(this.y <= borderPad + this.height){
             this.reset();
         }
     }

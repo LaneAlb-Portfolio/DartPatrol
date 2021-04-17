@@ -27,6 +27,20 @@ class Play extends Phaser.Scene{
         this.lobbybck = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'lobbybck')
         .setOrigin(0,0); 
 
+        // dartboards
+        this.ship01 = new Dartboard(this, game.config.width + borderUISize*6, borderUISize*4, 'dartboard', 0,30)
+        .setOrigin(0,0);
+        this.ship02 = new Dartboard(this, game.config.width + borderUISize*3, borderUISize*5 + borderPad*2, 
+        'dartboard', 0,20).setOrigin(0,0);
+        this.ship03 = new Dartboard(this, game.config.width, borderUISize*6 + borderUISize*4, 'dartboard', 0,10)
+        .setOrigin(0,0);
+        
+        // Silhouette
+        this.silo01 = new Silhouette(this, game.config.width + borderUISize*3, borderUISize*5 + borderPad*2, 
+            'silo', 0,-20).setOrigin(0,0);
+        this.silo02 = new Silhouette(this, game.config.width + borderUISize*3, borderUISize*5 + borderPad*2, 
+                'silo', 0,-20).setOrigin(0,0);
+
         // UI and Borders
         // Brown #7a4905 Border
         this.add.rectangle(0,0, game.config.width, borderUISize, 0x7a4905)
@@ -43,18 +57,6 @@ class Play extends Phaser.Scene{
         this.p1Dart = new Dart(this, game.config.width / 2, game.config.height - borderUISize - borderPad, 
         'dart', 0).setOrigin(0.5,0);
 
-        // darts
-        this.ship01 = new Dartboard(this, game.config.width + borderUISize*6, borderUISize*4, 'dartboard', 0,30)
-        .setOrigin(0,0);
-        this.ship02 = new Dartboard(this, game.config.width + borderUISize*3, borderUISize*5 + borderPad*2, 
-        'dartboard', 0,20).setOrigin(0,0);
-        this.ship03 = new Dartboard(this, game.config.width, borderUISize*6 + borderUISize*4, 'dartboard', 0,10)
-        .setOrigin(0,0);
-        
-        // Silhouette
-        this.silo = new Dartboard(this, game.config.width + borderUISize*3, borderUISize*5 + borderPad*2, 
-            'silo', 0,-20).setOrigin(0,0);
-        
         // define keys
         keyF     = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         keyR     = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -119,6 +121,11 @@ class Play extends Phaser.Scene{
         }, null, this);
         // get total play time from settings
         this.playTime = game.settings.gameTimer / 1000;
+        // silo timer
+        this.hazardTimer = [];
+        for(var i = 1; i <= game.settings.diff; i++) {
+            this.hazardTimer.push(this.time.addEvent({delay: Phaser.Math.Between(9000, 20000), loop: true}));
+        }
     }
 
     update(){
@@ -145,7 +152,14 @@ class Play extends Phaser.Scene{
             this.ship01.update();
             this.ship02.update();
             this.ship03.update();
-            this.silo.update();
+            // check hazard progress
+            console.log(this.hazardTimer[0].getProgress().toString().substr(0,4));
+            if(this.hazardTimer[0].getProgress().toString().substr(0,4) == "0.50"){
+                this.hazard(this.silo01);
+            }
+            if(game.settings.diff == 2 && this.hazardTimer[1].getProgress().toString().substr(0,4) == "0.50"){
+                this.hazard(this.silo02);
+            }
         }
 
         // check collisions
@@ -164,19 +178,24 @@ class Play extends Phaser.Scene{
             this.p1Dart.reset();
             this.shipExplode(this.ship01);
         }
-        if(this.checkCollision(this.p1Dart, this.silo)){
+        if(this.checkCollision(this.p1Dart, this.silo01)){
             // explosion
             this.p1Dart.reset();
-            this.shipExplode(this.silo);
+            this.siloExplode(this.silo01);
+        }
+        if(this.checkCollision(this.p1Dart, this.silo02)){
+            // explosion
+            this.p1Dart.reset();
+            this.siloExplode(this.silo02);
         }
     }
 
-    checkCollision(dart, ship){
+    checkCollision(dart, object){
         // simple checking
-        if (dart.x < ship.x + ship.width &&
-            dart.x + dart.width > ship.x &&
-            dart.y < ship.y + ship.height &&
-            dart.height + dart.y > ship.y) {
+        if (dart.x < object.x + object.width &&
+            dart.x + dart.width > object.x &&
+            dart.y < object.y + object.height &&
+            dart.height + dart.y > object.y) {
                 return true;
         } else {
             return false;
@@ -206,21 +225,27 @@ class Play extends Phaser.Scene{
         dart.play('rattle');
     }
 
-    shipExplode(ship){
+    siloExplode(silo){
         // hide ship
-        ship.alpha = 0;
+        silo.alpha = 0;
+        silo.dead();
         // create explosion at ship coords
-        let kaboom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
-        kaboom.anims.play('explode');
-        kaboom.on('animationcomplete', () => {
-            ship.reset();
-            ship.alpha = 1;
-            kaboom.destroy();
-        })
+        //let kaboom = this.add.sprite(silo.x, silo.y, 'explosion').setOrigin(0,0);
+        //kaboom.anims.play('explode');
+        //kaboom.on('animationcomplete', () => {
+        //   ship.reset();
+        //    ship.alpha = 1;
+        //    kaboom.destroy();
+        //})
         // add score and repaint
-        this.p1Score += ship.points;
+        this.p1Score += silo.points;
         this.scoreLeft.text = this.p1Score;
 
-        this.sound.play('sfx_explosion');
+        //this.sound.play('sfx_explosion');
+    }
+
+    hazard(silo){
+        silo.alpha = 1;
+        silo.move();
     }
 }
