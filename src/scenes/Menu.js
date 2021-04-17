@@ -36,6 +36,16 @@ class Menu extends Phaser.Scene{
         this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPad, "Use 'F' to throw", menuConfig).setOrigin(0.5);
         this.add.text(game.config.width/2, game.config.height - borderUISize*5 + borderPad/2, 'Choose Your Difficulty With the Arrows Above', menuConfig).setOrigin(0.5);
         
+        // show highscores
+        menuConfig.backgroundColor = 'rgba(0,0,0, 0)';
+        menuConfig.fontSize = '32px';
+        // noob
+        this.add.text((borderUISize + borderPad)*4 + 21, (borderUISize + borderPad)*2, 
+          pro_highscore.toString(), menuConfig).setOrigin(0.5);
+        // pro
+        this.add.text(game.config.width - (borderUISize + borderPad)*4 - 10, (borderUISize + borderPad)*2, 
+          noob_highscore.toString(), menuConfig).setOrigin(0.5);
+
         // define keys
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);

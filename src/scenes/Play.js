@@ -119,8 +119,6 @@ class Play extends Phaser.Scene{
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← to Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
-        // get total play time from settings
-        this.playTime = game.settings.gameTimer / 1000;
         // silo timer
         this.hazardTimer = [];
         for(var i = 1; i <= game.settings.diff; i++) {
@@ -132,10 +130,20 @@ class Play extends Phaser.Scene{
         //console.log(this.clock.getProgress() * 100);
         // check key input for restart / menu
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
+            if(game.diff == 2) {
+                pro_highscore = this.p1Score;
+            } else {
+                noob_highscore = this.p1Score;
+            }
             this.scene.restart();
         }
 
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+            if(game.diff == 2) {
+                pro_highscore = this.p1Score;
+            } else {
+                noob_highscore = this.p1Score;
+            }
             this.scene.start("menuScene");
         }
 
@@ -144,7 +152,7 @@ class Play extends Phaser.Scene{
 
         if(!this.gameOver){
             // update timer
-            this.playClock.text = Phaser.Math.FloorTo(this.playTime - (game.settings.gameTimer * this.clock.getProgress())/1000);
+            this.playClock.text = Phaser.Math.FloorTo( (game.settings.gameTimer / 1000) - (game.settings.gameTimer * this.clock.getProgress())/1000);
             // update dart
             this.p1Dart.update();
             this.dartRattle(this.p1Dart);
@@ -153,7 +161,7 @@ class Play extends Phaser.Scene{
             this.ship02.update();
             this.ship03.update();
             // check hazard progress
-            console.log(this.hazardTimer[0].getProgress().toString().substr(0,4));
+            //console.log(this.hazardTimer[0].getProgress().toString().substr(0,4));
             if(this.hazardTimer[0].getProgress().toString().substr(0,4) == "0.50"){
                 this.hazard(this.silo01);
             }
@@ -211,12 +219,13 @@ class Play extends Phaser.Scene{
         kaboom.on('animationcomplete', () => {
             ship.reset();
             ship.alpha = 1;
+            ship.moveSpeed += 1; // on successful hits increase its move speed overall
             kaboom.destroy();
         })
         // add score and repaint
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
-
+        game.settings.gameTimer += ship.points * 1000;
         this.sound.play('sfx_explosion');
     }
 
@@ -240,7 +249,7 @@ class Play extends Phaser.Scene{
         // add score and repaint
         this.p1Score += silo.points;
         this.scoreLeft.text = this.p1Score;
-
+        game.settings.gameTimer -= silo.points * 1000;
         //this.sound.play('sfx_explosion');
     }
 

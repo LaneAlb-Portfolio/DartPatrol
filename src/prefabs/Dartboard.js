@@ -18,6 +18,7 @@ class Dartboard extends Phaser.GameObjects.Sprite {
 
     reset(){
         this.x = game.config.width;
+        this.y = Phaser.Math.Between(borderPad, game.config.height - (borderPad + this.height * 2));
         // this.y randomize
         //this.y = Phaser.Math.Between();
         // bottom of play area: game.config.height - borderUISize - borderPad;
