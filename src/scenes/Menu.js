@@ -20,7 +20,7 @@ class Menu extends Phaser.Scene{
     create(){
         let menuConfig = {
             fontFamily: 'Arimo',
-            fontSize: '32px',
+            fontSize: '48px',
             backgroundColor: '',
             color: '#FFFFFF',
             align: 'right',
@@ -35,13 +35,15 @@ class Menu extends Phaser.Scene{
         this.lobbybck = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'menubck')
         .setOrigin(0,0);
         // show menu text
-        this.add.text(game.config.width/2 + 10, game.config.height - borderUISize, 'DART LOBBY', menuConfig).setOrigin(0.5);
+        this.add.text(game.config.width/2 + 15, game.config.height - borderUISize - borderPad, 'DART LOBBY', menuConfig).setOrigin(0.5);
         menuConfig.backgroundColor = 'rgba(0,0,0, 0.4)';
         menuConfig.fontSize = '24px';
         this.add.text(game.config.width/2, game.config.height/2, "Use ← → arrows to angle the dart", menuConfig).setOrigin(0.5);
         this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPad, "Use 'F' to throw", menuConfig).setOrigin(0.5);
         this.add.text(game.config.width/2, game.config.height - borderUISize*5 + borderPad/2, 'Choose Your Difficulty With the Arrows Above', menuConfig).setOrigin(0.5);
-        
+        // credits for music I didnt make
+        menuConfig.fontSize = '12px';
+        this.add.text(game.config.width/2 + 10, game.config.height - borderPad, 'Music from syncopika on opengameart.org under CC', menuConfig).setOrigin(0.5);
         // show highscores
         menuConfig.backgroundColor = 'rgba(0,0,0, 0)';
         menuConfig.fontSize = '32px';
