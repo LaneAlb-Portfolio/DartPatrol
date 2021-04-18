@@ -3,25 +3,36 @@ class Silhouette extends Phaser.GameObjects.Sprite {
         super(scene, x, y, texture, frame);
         scene.add.existing(this);  // add to curr scene
         this.points = pointValue;  // points 
+        this.randomMovement = Phaser.Math.Between(1,2);           // randomize left or right movement
         this.moveSpeed = game.settings.dartboardSpeed + 2;        // movement in pixels
     }
 
     move(){
-        if(this.x >= game.config.width){
-            // it was moved off screen move it onto screen first
-            this.x = 0;
-        }
-        // move silo left
-        this.x += this.moveSpeed;
-        //this.angle += 0.1;
-        // movement wrap
-        if(this.x >= game.config.width - this.width){
-            this.reset();
+        // move silo left or right depending on its randomMovement status
+        if(this.randomMovement <= 1){
+            this.x -= this.moveSpeed;
+            if(this.x <= 0 - this.width){
+                this.reset();
+            }
+        } else {
+            this.x += this.moveSpeed;
+            if(this.x >= game.config.width - this.width){
+                this.reset();
+            }
         }
     }
 
+    // reset Silo is only called when the player has not killed it in this session
+    // so if its called just reverse random movement to get it to move
+    // "backwards"
     reset(){
-        this.x = this.width + borderPad;
+        if(this.randomMovement <= 1){
+            this.x = this.width + borderPad;
+            this.randomMovement = 2; // just hard code it with only 2 options
+        } else {
+            this.x = game.config.width - this.width;
+            this.randomMovement = 1;
+        }
     }
 
     dead(){

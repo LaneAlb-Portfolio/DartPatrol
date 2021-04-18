@@ -3,26 +3,32 @@ class Dartboard extends Phaser.GameObjects.Sprite {
         super(scene, x, y, texture, frame);
         scene.add.existing(this);  // add to curr scene
         this.points = pointValue;  // points 
+        this.randomMovement = Phaser.Math.Between(1,2);       // movement 
         this.moveSpeed = game.settings.dartboardSpeed;        // movement in pixels
     }
 
     update(){
-        // move spaceship left
-        this.x -= this.moveSpeed;
-        //this.angle += 0.1;
-        // movement wrap
-        if(this.x <= 0 - this.width){
-            this.reset();
+        // move spaceship left or right depending on its randomMovement status
+        if(this.randomMovement <= 1){
+            this.x -= this.moveSpeed;
+            if(this.x <= 0 - this.width){
+                this.reset();
+            }
+        } else {
+            this.x += this.moveSpeed;
+            if(this.x >= game.config.width - this.width){
+                this.reset();
+            }
         }
     }
 
     reset(){
-        this.x = game.config.width;
+        if(this.randomMovement <= 1){
+            this.x = game.config.width;
+        } else {
+            this.x = 0;
+        }
         this.y = Phaser.Math.Between(borderPad, game.config.height - (borderPad + this.height * 2));
-        // this.y randomize
-        //this.y = Phaser.Math.Between();
-        // bottom of play area: game.config.height - borderUISize - borderPad;
-        // top: borderUISize * 3 + borderPad
     }
 
 }

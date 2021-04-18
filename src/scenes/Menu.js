@@ -5,9 +5,15 @@ class Menu extends Phaser.Scene{
 
     preload(){
         // load audio
-        this.load.audio('sfx_select', './assets/blip_select12.wav');
-        this.load.audio('sfx_explosion', './assets/explosion38.wav');
-        this.load.audio('sfx_rocket', './assets/rocket_shot.wav');
+        this.load.audio('sfx_select', './assets/select.wav');
+        this.load.audio('sfx_niceShot', './assets/niceShot.wav');
+        this.load.audio('sfx_springBoard', './assets/springBoard.wav');
+        this.load.audio('sfx_thunk', './assets/thunk.wav');
+        this.load.audio('sfx_break', './assets/boardBreak.wav');
+        this.load.audio('sfx_throw', './assets/throw.wav');
+        this.load.audio('sfx_ouch', './assets/ouch.wav');
+        this.load.audio('music', './assets/music.mp3');
+        this.load.audio('yikes', './assets/yikes.wav');
         this.load.image('menubck', './assets/MenuScreen.png');
     }
 

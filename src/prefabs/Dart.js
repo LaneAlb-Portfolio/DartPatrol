@@ -6,14 +6,15 @@ class Dart extends Phaser.GameObjects.Sprite {
         super(scene, x, y , texture, frame);
         // add object to the existing scene
         scene.add.existing(this);
-        this.isFiring  = false;     // rocket firing status
+        this.isthrowing  = false;     // dart throwing status
         this.moveSpeed = 2;         // pixel movement per frame
-        this.sfxRocket = scene.sound.add('sfx_rocket'); // rocket sfx
+        this.sfxDart = scene.sound.add('sfx_throw'); // dart sfx
+        this.sfxMiss = scene.sound.add('yikes');
     } 
 
     update(){
         // left and right movement
-        if(!this.isFiring){
+        if(!this.isthrowing){
             if(keyLEFT.isDown && this.x >= (borderUISize + this.width) && this.angle > -90 ){
                 this.angle -= this.moveSpeed;
                 //console.log(this.angle);
@@ -22,13 +23,13 @@ class Dart extends Phaser.GameObjects.Sprite {
                 //console.log(this.angle);
             }
         }
-        // firing
-        if(Phaser.Input.Keyboard.JustDown(keyF) && !this.isFiring){
-            this.isFiring = true;
-            this.sfxRocket.play();
+        // throwing
+        if(Phaser.Input.Keyboard.JustDown(keyF) && !this.isthrowing){
+            this.isthrowing = true;
+            this.sfxDart.play();
         }
         // projectile movement
-        if(this.isFiring && this.y >= borderPad + this.height){
+        if(this.isthrowing && this.y >= borderPad + this.height){
             this.y -= this.moveSpeed;
             this.x += (this.rotation * this.moveSpeed);
             // put shake here
@@ -36,12 +37,13 @@ class Dart extends Phaser.GameObjects.Sprite {
         // reset if projectile miss
         if(this.y <= borderPad + this.height){
             this.reset();
+            this.sfxMiss.play();
         }
     }
 
     //reset rocket
     reset(){
-        this.isFiring = false;
+        this.isthrowing = false;
         this.y = game.config.height - borderUISize - borderPad;
         this.x = game.config.width / 2;
     }

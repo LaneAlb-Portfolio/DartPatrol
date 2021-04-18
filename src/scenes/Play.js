@@ -5,12 +5,7 @@ class Play extends Phaser.Scene{
 
     preload(){
         // load tile sprites
-        this.load.spritesheet('dart', './assets/dart.png', {
-            frameWidth: 8,
-            frameHeight: 30,
-            startFrame: 0,
-            endFrame: 1
-        });
+        this.load.image('dart', './assets/dart.png');
         this.load.image('dartboard', './assets/dartboard.png');
         this.load.image('lobbybck', './assets/lobby.png');
         this.load.image('silo', './assets/Silhouette.png');
@@ -23,9 +18,43 @@ class Play extends Phaser.Scene{
     }
 
     create(){
+        // configs
+        // Score
+        let scoreConfig = {
+            fontFamily: 'Arimo',
+            fontSize: '64px',
+            //backgroundColor: '#F3B141',
+            color: '#000000',
+            align: 'center',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        // animation
+        const configboardBreak = ({
+            key: 'break', 
+            frames: this.anims.generateFrameNumbers('boardBreak', {
+                start: 0,
+                end: 7,
+                first: 0
+            }),
+            frameRate: 18
+        });        
+
+        // backround music
+        this.music = this.sound.add('music', {volume: 0.4, rate: 1, loop: true});
+        this.music.play();
+
         // lobbybck bckgr
         this.lobbybck = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'lobbybck')
         .setOrigin(0,0); 
+
+        // setup background play clock
+        this.playClock = this.add.text(game.config.width/2 - (borderPad + borderUISize) -5, game.config.height - (borderUISize + borderPad)*3, 
+            Phaser.Math.FloorTo(game.settings.gameTimer/1000), scoreConfig);
+        this.playClock.alpha = 0.5;
 
         // dartboards
         this.ship01 = new Dartboard(this, game.config.width + borderUISize*6, borderUISize*4, 'dartboard', 0,30)
@@ -62,50 +91,16 @@ class Play extends Phaser.Scene{
         keyR     = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         keyLEFT  = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-        
-        // animation configs
-        const configboardBreak = ({
-            key: 'break', 
-            frames: this.anims.generateFrameNumbers('boardBreak', {
-                start: 0,
-                end: 7,
-                first: 0
-            }),
-            frameRate: 18
-        });
-        const configPlayer = ({
-            key: 'rattle', 
-            frames: this.anims.generateFrameNumbers('dart', {
-                start: 0,
-                end: 1,
-            }),
-            frameRate: 1,
-        });
+
         // create animations object
-        this.anims.create(configPlayer);
         this.anims.create(configboardBreak);
+
         // initialize score
         this.p1Score = 0;
-
-        // display Score
-        let scoreConfig = {
-            fontFamily: 'Arimo',
-            fontSize: '24px',
-            //backgroundColor: '#F3B141',
-            color: '#FFFFFF',
-            align: 'center',
-            padding: {
-                top: 5,
-                bottom: 5,
-            },
-            fixedWidth: 100
-        }
+        scoreConfig.fontSize = '24px';
+        scoreConfig.color = '#FFFFFF';
         this.scoreLeft = this.add.text(game.settings.textPointX, (borderUISize + borderPad)*2, this.p1Score, scoreConfig);
-        scoreConfig.fontSize = '64px';
-        scoreConfig.color = '#000000';
-        this.playClock = this.add.text(game.config.width/2 - (borderPad + borderUISize), game.config.height - (borderUISize + borderPad)*2, 
-            Phaser.Math.FloorTo(game.settings.gameTimer/1000), scoreConfig);
-        this.playClock.alpha = 0.7;
+
         // GAME OVER flag
         this.gameOver = false;
 
@@ -135,6 +130,7 @@ class Play extends Phaser.Scene{
             } else {
                 noob_highscore = this.p1Score;
             }
+            this.music.stop();
             this.scene.restart();
         }
 
@@ -144,6 +140,7 @@ class Play extends Phaser.Scene{
             } else {
                 noob_highscore = this.p1Score;
             }
+            this.music.stop();
             this.scene.start("menuScene");
         }
 
@@ -155,17 +152,16 @@ class Play extends Phaser.Scene{
             this.playClock.text = Phaser.Math.FloorTo( (game.settings.gameTimer / 1000) - (game.settings.gameTimer * this.clock.getProgress())/1000);
             // update dart
             this.p1Dart.update();
-            this.dartRattle(this.p1Dart);
             // update ships
             this.ship01.update();
             this.ship02.update();
             this.ship03.update();
             // check hazard progress
             //console.log(this.hazardTimer[0].getProgress().toString().substr(0,4));
-            if(this.hazardTimer[0].getProgress().toString().substr(0,4) == "0.50"){
+            if(this.hazardTimer[0].getProgress().toString().substr(0,4) == "0.10" || this.hazardTimer[0].getProgress().toString().substr(0,4) == "0.50"){
                 this.hazard(this.silo01);
             }
-            if(game.settings.diff == 2 && this.hazardTimer[1].getProgress().toString().substr(0,4) == "0.50"){
+            if(game.settings.diff == 2 && (this.hazardTimer[1].getProgress().toString().substr(0,4) == "0.10" || this.hazardTimer[1].getProgress().toString().substr(0,4) == "0.50")){
                 this.hazard(this.silo02);
             }
         }
@@ -226,12 +222,27 @@ class Play extends Phaser.Scene{
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
         game.settings.gameTimer += ship.points * 1000;
-        this.sound.play('sfx_boardBreak');
-    }
-
-    dartRattle(dart){
-        // rattle dart object
-        dart.play('rattle');
+        // play random explosion sound
+        this.random = Phaser.Math.Between(0,3);
+        switch(this.random){
+            case 0: {
+                this.sound.play('sfx_springBoard', {volume: 5});
+                break;
+            }
+            case 1: {
+                this.sound.play('sfx_niceShot', {volume: 2});
+                break;
+            }
+            case 2: {
+                this.sound.play('sfx_thunk', {volume: 2});
+                break;
+            }
+            case 3: {
+                this.sound.play('sfx_break', {volume: 5});
+                break;
+            }
+            default: this.sound.play('sfx_break', {volume: 3});
+        }
     }
 
     silobreak(silo){
@@ -250,7 +261,7 @@ class Play extends Phaser.Scene{
         this.p1Score += silo.points;
         this.scoreLeft.text = this.p1Score;
         game.settings.gameTimer -= silo.points * 1000;
-        //this.sound.play('sfx_boardBreak');
+        this.sound.play('sfx_ouch');
     }
 
     hazard(silo){
