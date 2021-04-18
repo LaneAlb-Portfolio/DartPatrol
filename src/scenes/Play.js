@@ -14,11 +14,11 @@ class Play extends Phaser.Scene{
         this.load.image('dartboard', './assets/dartboard.png');
         this.load.image('lobbybck', './assets/lobby.png');
         this.load.image('silo', './assets/Silhouette.png');
-        this.load.spritesheet('explosion', './assets/explosion.png', {
+        this.load.spritesheet('boardBreak', './assets/DartBreak.png', {
             frameWidth: 64,
-            frameHeight: 32,
+            frameHeight: 64,
             startFrame: 0,
-            endFrame: 9
+            endFrame: 7
         });
     }
 
@@ -64,14 +64,14 @@ class Play extends Phaser.Scene{
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         
         // animation configs
-        const configExplosion = ({
-            key: 'explode', 
-            frames: this.anims.generateFrameNumbers('explosion', {
+        const configboardBreak = ({
+            key: 'break', 
+            frames: this.anims.generateFrameNumbers('boardBreak', {
                 start: 0,
-                end: 9,
+                end: 7,
                 first: 0
             }),
-            frameRate: 30
+            frameRate: 18
         });
         const configPlayer = ({
             key: 'rattle', 
@@ -83,7 +83,7 @@ class Play extends Phaser.Scene{
         });
         // create animations object
         this.anims.create(configPlayer);
-        this.anims.create(configExplosion);
+        this.anims.create(configboardBreak);
         // initialize score
         this.p1Score = 0;
 
@@ -172,29 +172,29 @@ class Play extends Phaser.Scene{
 
         // check collisions
         if(this.checkCollision(this.p1Dart, this.ship03)){
-            // explosion
+            // boardBreak
             this.p1Dart.reset();
-            this.shipExplode(this.ship03);
+            this.shipbreak(this.ship03);
         }
         if(this.checkCollision(this.p1Dart, this.ship02)){
-            // explosion
+            // boardBreak
             this.p1Dart.reset();
-            this.shipExplode(this.ship02);
+            this.shipbreak(this.ship02);
         }
         if(this.checkCollision(this.p1Dart, this.ship01)){
-            // explosion
+            // boardBreak
             this.p1Dart.reset();
-            this.shipExplode(this.ship01);
+            this.shipbreak(this.ship01);
         }
         if(this.checkCollision(this.p1Dart, this.silo01)){
-            // explosion
+            // boardBreak
             this.p1Dart.reset();
-            this.siloExplode(this.silo01);
+            this.silobreak(this.silo01);
         }
         if(this.checkCollision(this.p1Dart, this.silo02)){
-            // explosion
+            // boardBreak
             this.p1Dart.reset();
-            this.siloExplode(this.silo02);
+            this.silobreak(this.silo02);
         }
     }
 
@@ -210,12 +210,12 @@ class Play extends Phaser.Scene{
         }
     }
 
-    shipExplode(ship){
+    shipbreak(ship){
         // hide ship
         ship.alpha = 0;
-        // create explosion at ship coords
-        let kaboom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
-        kaboom.anims.play('explode');
+        // create boardBreak at ship coords
+        let kaboom = this.add.sprite(ship.x, ship.y, 'boardBreak').setOrigin(0,0);
+        kaboom.anims.play('break');
         kaboom.on('animationcomplete', () => {
             ship.reset();
             ship.alpha = 1;
@@ -226,7 +226,7 @@ class Play extends Phaser.Scene{
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
         game.settings.gameTimer += ship.points * 1000;
-        this.sound.play('sfx_explosion');
+        this.sound.play('sfx_boardBreak');
     }
 
     dartRattle(dart){
@@ -234,13 +234,13 @@ class Play extends Phaser.Scene{
         dart.play('rattle');
     }
 
-    siloExplode(silo){
+    silobreak(silo){
         // hide ship
         silo.alpha = 0;
         silo.dead();
-        // create explosion at ship coords
-        //let kaboom = this.add.sprite(silo.x, silo.y, 'explosion').setOrigin(0,0);
-        //kaboom.anims.play('explode');
+        // create boardBreak at ship coords
+        //let kaboom = this.add.sprite(silo.x, silo.y, 'boardBreak').setOrigin(0,0);
+        //kaboom.anims.play('break');
         //kaboom.on('animationcomplete', () => {
         //   ship.reset();
         //    ship.alpha = 1;
@@ -250,7 +250,7 @@ class Play extends Phaser.Scene{
         this.p1Score += silo.points;
         this.scoreLeft.text = this.p1Score;
         game.settings.gameTimer -= silo.points * 1000;
-        //this.sound.play('sfx_explosion');
+        //this.sound.play('sfx_boardBreak');
     }
 
     hazard(silo){
