@@ -124,21 +124,26 @@ class Play extends Phaser.Scene{
     update(){
         //console.log(this.clock.getProgress() * 100);
         // check key input for restart / menu
+        // save highscores on end
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
-            if(game.diff == 2) {
-                pro_highscore = this.p1Score;
+            if(game.settings.diff == 2){
+                pro_highscore  = this.p1Score;
+                noob_highscore = noob_highscore;
             } else {
                 noob_highscore = this.p1Score;
+                pro_highscore  = pro_highscore;
             }
             this.music.stop();
             this.scene.restart();
         }
 
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            if(game.diff == 2) {
-                pro_highscore = this.p1Score;
+            if(game.settings.diff == 2){
+                pro_highscore  = this.p1Score;
+                noob_highscore = noob_highscore;
             } else {
                 noob_highscore = this.p1Score;
+                pro_highscore  = pro_highscore;
             }
             this.music.stop();
             this.scene.start("menuScene");
@@ -158,10 +163,11 @@ class Play extends Phaser.Scene{
             this.ship03.update();
             // check hazard progress
             //console.log(this.hazardTimer[0].getProgress().toString().substr(0,4));
-            if(this.hazardTimer[0].getProgress().toString().substr(0,4) == "0.10" || this.hazardTimer[0].getProgress().toString().substr(0,4) == "0.50"){
+            if(this.hazardTimer[0].getProgress().toString().substr(0,4) == "0.50"){
                 this.hazard(this.silo01);
             }
-            if(game.settings.diff == 2 && (this.hazardTimer[1].getProgress().toString().substr(0,4) == "0.10" || this.hazardTimer[1].getProgress().toString().substr(0,4) == "0.50")){
+            if(game.settings.diff == 2 && (this.hazardTimer[1].getProgress().toString().substr(0,4) == "0.10" || 
+                    this.hazardTimer[1].getProgress().toString().substr(0,4) == "0.50")){
                 this.hazard(this.silo02);
             }
         }
@@ -183,12 +189,12 @@ class Play extends Phaser.Scene{
             this.shipbreak(this.ship01);
         }
         if(this.checkCollision(this.p1Dart, this.silo01)){
-            // boardBreak
+            // silobreak
             this.p1Dart.reset();
             this.silobreak(this.silo01);
         }
         if(this.checkCollision(this.p1Dart, this.silo02)){
-            // boardBreak
+            // silobreak
             this.p1Dart.reset();
             this.silobreak(this.silo02);
         }
@@ -221,7 +227,7 @@ class Play extends Phaser.Scene{
         // add score and repaint
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
-        game.settings.gameTimer += ship.points * 1000;
+        game.settings.gameTimer += (ship.points * 1000);
         // play random explosion sound
         this.random = Phaser.Math.Between(0,3);
         switch(this.random){
@@ -260,12 +266,18 @@ class Play extends Phaser.Scene{
         // add score and repaint
         this.p1Score += silo.points;
         this.scoreLeft.text = this.p1Score;
-        game.settings.gameTimer -= silo.points * 1000;
+        game.settings.gameTimer += (silo.points * 10000);
         this.sound.play('sfx_ouch');
+        //console.log("timer: " + game.settings.gameTimer.toString());
+        // if hitting silo produces negative time end the game
+        if(game.settings.gameTimer <= 0){
+            this.clock.remove(true);
+        }
     }
 
     hazard(silo){
         silo.alpha = 1;
         silo.move();
     }
+
 }

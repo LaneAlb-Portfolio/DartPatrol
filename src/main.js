@@ -11,8 +11,8 @@ let config = {
 let game = new Phaser.Game(config);
 
 // highscore variable
-let noob_highscore = 0;
-let pro_highscore = 0;
+var noob_highscore = 0;
+var pro_highscore  = 0;
 
 // set UI variables
 let borderUISize = game.config.height / 15;

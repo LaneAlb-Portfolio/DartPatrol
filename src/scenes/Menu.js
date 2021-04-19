@@ -49,10 +49,10 @@ class Menu extends Phaser.Scene{
         menuConfig.fontSize = '32px';
         // noob
         this.add.text((borderUISize + borderPad)*4 + 21, (borderUISize + borderPad)*2, 
-          pro_highscore.toString(), menuConfig).setOrigin(0.5);
+          noob_highscore.toString(), menuConfig).setOrigin(0.5);
         // pro
         this.add.text(game.config.width - (borderUISize + borderPad)*4 - 10, (borderUISize + borderPad)*2, 
-          noob_highscore.toString(), menuConfig).setOrigin(0.5);
+          pro_highscore.toString(), menuConfig).setOrigin(0.5);
 
         // define keys
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
