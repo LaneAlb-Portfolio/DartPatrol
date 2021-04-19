@@ -266,7 +266,7 @@ class Play extends Phaser.Scene{
         // add score and repaint
         this.p1Score += silo.points;
         this.scoreLeft.text = this.p1Score;
-        game.settings.gameTimer += (silo.points * 10000);
+        game.settings.gameTimer += (silo.points * 1000);
         this.sound.play('sfx_ouch');
         //console.log("timer: " + game.settings.gameTimer.toString());
         // if hitting silo produces negative time end the game
